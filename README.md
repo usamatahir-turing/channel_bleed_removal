@@ -1,6 +1,13 @@
 # Channel Bleed
 
-Automated post-processing for Riverside-style multitrack recordings. Reduces **channel bleed** (one speaker's voice appearing quietly on another speaker's track) using RMS energy gating with a smooth gain ramp.
+Post-processing for Riverside-style multitrack recordings to reduce **channel bleed** (one speaker's voice appearing on another speaker's track).
+
+Two approaches:
+
+| Script | Method |
+|--------|--------|
+| `automated_process_channel_bleed.py` | RMS energy gating with smooth gain ramp |
+| `manually_process_channel_bleed.py` | Gecko `seglst.json` segment annotations |
 
 ## Problem
 
@@ -119,3 +126,40 @@ python automated_process_channel_bleed.py --threshold-db 28 --high-threshold-db 
 - **Per-channel** — each track is processed independently; cross-channel logic is not used.
 
 For heavy bleed where transcript accuracy is critical, listen to outputs and adjust thresholds per language/recording setup.
+
+---
+
+## Manual processing (seglst)
+
+Use when segments have been annotated in Gecko. Keeps audio **only** inside annotated `[start_time, end_time]` ranges and zeros everything else.
+
+### Layout
+
+```
+manual/Conversations/
+  NV-EN-SS08-CONVO20/
+    original/
+      speaker@turing.com.wav
+      speaker@turing.com.seglst.json
+    processed/              ← output (created by script)
+```
+
+Each WAV must have a matching `<stem>.seglst.json` in the same `original/` folder. WAVs without a seglst file are skipped.
+
+### Usage
+
+```bash
+python manually_process_channel_bleed.py
+```
+
+Custom root:
+
+```bash
+python manually_process_channel_bleed.py --conversations path/to/manual/Conversations
+```
+
+Optional fade at segment edges (default 10 ms):
+
+```bash
+python manually_process_channel_bleed.py --fade-ms 10
+```

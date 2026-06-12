@@ -28,8 +28,9 @@ Thumbs.db
 *.nbc
 *.nbi
 
-# Generated output (--write-segments CSVs live under automated_processed/)
+# Generated output
 **/automated_processed/
+**/processed/
 **/*.csv
 
 # Input audio (large binaries — keep locally)
